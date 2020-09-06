@@ -62,7 +62,7 @@ class Handler:
         self.post_process_ =  bool(ini['post_process_'])
 
         self.pretrained    =       ini['pretrained']
-        self.model_path    =       ini(['model_path'])
+        self.model_path    =       ini['model_path']
         self.classify_     =  bool(ini['classify_'])
         self.num_classes   =       ini['num_classes']
         self.dropout_prob  = float(ini['dropout_prob'])

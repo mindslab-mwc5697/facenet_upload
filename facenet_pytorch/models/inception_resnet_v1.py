@@ -263,7 +263,7 @@ class InceptionResnetV1(nn.Module):
         if pretrained is not None:
             self.logits = nn.Linear(512, tmp_classes)
             # load_weights(self, pretrained)
-            load_weights(self, pretrained, model_path=self.model_path)
+            load_weights(self, pretrained, model_fname=self.model_path)
 
         if self.classify and self.num_classes is not None:
             self.logits = nn.Linear(512, self.num_classes)
