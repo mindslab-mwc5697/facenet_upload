@@ -34,6 +34,7 @@ class Handler:
         self.post_process_ = True
 
         self.pretrained = None
+        self.model_path = None
         self.classify_ = False
         self.num_classes = None
         self.dropout_prob = None
@@ -43,17 +44,25 @@ class Handler:
         self.resnet = None
 
         if ini:
-            self.init_ini(ini)
+            self.init_ini()
 
-    def init_ini(self, ini):
+    def init_ini(self):
+
+        ini = self.ini['FACENET_PYTORCH']
 
         self.description   =       ini['description']
         self.version       =       ini['version']
         self.device        =       ini['device']
 
-        self.init_ini_mtcnn(ini['MTCNN'])
+        self.img_size      =   int(ini['img_size'])
+        self.margin        =   int(ini['margin'])
+        self.min_face_size =   int(ini['min_face_size'])
+        self.thresholds    =  eval(ini['thresholds'])
+        self.factor        = float(ini['factor'])
+        self.post_process_ =  bool(ini['post_process_'])
 
         self.pretrained    =       ini['pretrained']
+        self.model_path    =       ini(['model_path'])
         self.classify_     =  bool(ini['classify_'])
         self.num_classes   =       ini['num_classes']
         self.dropout_prob  = float(ini['dropout_prob'])
@@ -69,17 +78,9 @@ class Handler:
 
         self.logger.info(" # {} : initializing...".format(_this_algorithm_))
 
-        self.init_net()
+        self.init_model()
 
-    def init_ini_mtcnn(self, ini):
-        self.img_size      =   int(ini['img_size'])
-        self.margin        =   int(ini['margin'])
-        self.min_face_size =   int(ini['min_face_size'])
-        self.thresholds    =  eval(ini['thresholds'])
-        self.factor        = float(ini['factor'])
-        self.post_process_ =  bool(ini['post_process_'])
-
-    def init_net(self):
+    def init_model(self):
 
         self.mtcnn = MTCNN(image_size=self.img_size,
                            margin=self.margin,
@@ -92,6 +93,7 @@ class Handler:
                            device=self.device)
         # noinspection PyUnresolvedReferences
         self.resnet = InceptionResnetV1(pretrained=self.pretrained,
+                                        model_path=self.model_path,
                                         classify=self.classify_,
                                         num_classes=self.num_classes,
                                         dropout_prob=self.dropout_prob,

@@ -199,11 +199,13 @@ class InceptionResnetV1(nn.Module):
             initialized. (default: {None})
         dropout_prob {float} -- Dropout probability. (default: {0.6})
     """
-    def __init__(self, pretrained=None, classify=False, num_classes=None, dropout_prob=0.6, device=None):
+    def __init__(self, pretrained=None, model_path=None,
+                 classify=False, num_classes=None, dropout_prob=0.6, device=None):
         super().__init__()
 
         # Set simple attributes
         self.pretrained = pretrained
+        self.model_path = model_path
         self.classify = classify
         self.num_classes = num_classes
 
@@ -215,7 +217,6 @@ class InceptionResnetV1(nn.Module):
             tmp_classes = 10575
         elif pretrained is None and self.classify and self.num_classes is None:
             raise Exception('If "pretrained" is not specified and "classify" is True, "num_classes" must be specified')
-
 
         # Define layers
         self.conv2d_1a = BasicConv2d(3, 32, kernel_size=3, stride=2)
@@ -261,7 +262,8 @@ class InceptionResnetV1(nn.Module):
 
         if pretrained is not None:
             self.logits = nn.Linear(512, tmp_classes)
-            load_weights(self, pretrained)
+            # load_weights(self, pretrained)
+            load_weights(self, pretrained, model_path=self.model_path)
 
         if self.classify and self.num_classes is not None:
             self.logits = nn.Linear(512, self.num_classes)
@@ -349,7 +351,7 @@ _this_folder_ = os.path.dirname(os.path.abspath(__file__))
 _model_folder_ = os.path.join(_this_folder_, '..', '..', 'Models')
 
 
-def load_weights(mdl, name):
+def load_weights(mdl, name, model_fname=None):
     """Download pretrained state_dict and load into model.
 
     Arguments:
@@ -369,6 +371,9 @@ def load_weights(mdl, name):
             model_path = os.path.join(_model_folder_, "{}.pt".format(name))
         else:
             raise ValueError("Pretrained models, {}.pt,  doesn't exist. Instead, use vggface2.".format(name))
+
+    if model_fname is not None:
+        model_path = model_fname
 
     state_dict = torch.load(model_path)
     mdl.load_state_dict(state_dict)
