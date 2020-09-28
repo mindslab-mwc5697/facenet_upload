@@ -126,7 +126,7 @@ class Handler:
             face_recog_probs = self.resnet(face_img_arr.to(self.device)).detach().cpu()
             for idx, arr in enumerate(face_recog_probs):
                 abs_arr = abs(arr)
-                face_indexes.append(int(abs_arr.argmin()))
+                face_indexes.append(int(abs_arr.argmax()))
                 face_errors.append(utils.trunc(abs_arr[face_indexes[-1]], 0.001))
                 embed_vec = [int(x * resolution) / resolution for x in self.resnet.vec[idx]]
                 face_vectors.append(embed_vec)
